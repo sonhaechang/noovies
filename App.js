@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
+import { Ionicons } from '@expo/vector-icons'
+import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
@@ -10,7 +13,13 @@ export default function App() {
 	useEffect(() => {
 		async function prepare() {
 			try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        		await Font.loadAsync(Ionicons.font);
+				// import { Asset } from 'expo-asset';
+				// await Asset.loadAsync(require(url)); // In local file system 
+
+				// inport { Image } from 'react-native'
+				// await Image.prefetch(url); // on the Web
 				setReady(true);
 			} catch (e) {
 				console.log(e);
