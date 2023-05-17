@@ -21,5 +21,5 @@ export default function App() {
 		<NavigationContainer onLayout={onLayoutRootView}>
 			<Tabs />
 		</NavigationContainer>
-	  );
+	);
 }
