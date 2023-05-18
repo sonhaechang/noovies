@@ -33,7 +33,9 @@ const NativeStack = createNativeStackNavigator();
 
 export default function Stack() {
     return (
-        <NativeStack.Navigator>
+        <NativeStack.Navigator
+            screenOptions={{ headerBackTitleVisible: false, }}
+        >
             <NativeStack.Screen name='One' component={ScreenOne} />
             <NativeStack.Screen name='Two' component={ScreenTwo} />
             <NativeStack.Screen name='Three' component={ScreenThree} />
