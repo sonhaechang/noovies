@@ -5,10 +5,11 @@ const Btn = styled.TouchableOpacity`
     flex: 1; 
     justify-content: center;
     align-items: center;
+    background-color: ${props => props.theme.mainBgColor};
 `;
 
 const Title = styled.Text`
-    color: #4F46E5;
+    color: ${props => props.theme.textColor};
 `
 
 export default function Movies({ navigation: { navigate } }) {
