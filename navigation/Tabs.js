@@ -20,7 +20,7 @@ export default function Tabs() {
             initialRouteName='Movies'
             screenOptions={{ 
                 tabBarStyle: { backgroundColor: isDark ? colors.dark : 'white', },
-                tabBarActiveTintColor: isDark ? colors.indigo : colors.dark,
+                tabBarActiveTintColor: colors.indigo,
                 tabBarInactiveTintColor: isDark ? '#d3dae2' : '#808e9b',
                 headerStyle: { backgroundColor: isDark ? colors.dark : 'white', },
                 headerTitleStyle: { color: isDark ? 'white' : colors.dark, },
