@@ -9,7 +9,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { TMDB_API_KEY } from '@env';
 import Slide from '../components/Slide';
-import Poster from '../components/Poster';
+import HMedia from '../navigation/HMidia';
+import VMedia from '../navigation/VMedia';
 
 
 const Container = styled.ScrollView``;
@@ -32,52 +33,13 @@ const TrendingScroll = styled.ScrollView`
 
 `;
 
-const Movie = styled.View`
-    margin-right: 20px;
-    align-items: center;
-`;
-
-const Title = styled.Text<{ isDark: boolean }>`
-    color: ${(props) => (props.isDark ? 'white' : props.theme.textColor)};
-    font-weight: 600;
-    margin-top: 7px;
-    margin-bottom: 5px;
-`;
-
-const Votes = styled.Text<{ isDark: boolean }>`
-    color: ${(props) => (props.isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.8)')};
-    font-size: 10px;
-`;
-
 const ListContainer = styled.View`
     margin-bottom: 40px;
 `;
 
 const ComingSoonTitle = styled(ListTitle)`
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 `
-
-const HMovie = styled.View`
-    flex-direction: row;
-    padding: 0px 30px;
-    margin-bottom: 30px;
-`;
-
-const HColumn = styled.View`
-    margin-left: 15px;
-    width: 80%;
-`;
-
-const Overview = styled.Text<{ isDark: boolean }>`
-    color: ${(props) => (props.isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.8)')};
-    width: 80%;
-`;
-
-const Release = styled.Text<{ isDark: boolean }>`
-    color: ${(props) => (props.isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.8)')};
-    font-size: 12px;
-    margin-vertical: 10px;
-`;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -168,6 +130,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                         originalTitle={movie.original_title}
                         voteAverage={movie.vote_average}
                         overview={movie.overview}
+                        isDark={isDark}
                     />
                 ))}
             </Swiper>
@@ -181,22 +144,13 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                     contentContainerStyle={{ paddingLeft: 30 }}
                 >
                     {trending.map((movie: any) => (
-                        <Movie key={movie.id}>
-                            <Poster path={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
-
-                            <Title isDark={isDark}>
-                                {movie.original_title.slice(0, 13)}
-                                {movie.original_title.length > 13 ? '...' : null}
-                            </Title>
-
-                            <Votes isDark={isDark}>
-                                {
-                                    movie.vote_average > 0 ?
-                                    `⭐️ ${movie.vote_average}/10` : 
-                                    'Coming soon'
-                                }
-                             </Votes>
-                        </Movie>
+                        <VMedia
+                            key={movie.id}
+                            posterPath={movie.poster_path}
+                            originalTitle={movie.original_title}
+                            voteAverage={movie.vote_average}
+                            isDark={isDark}
+                        />
                     ))}
                 </TrendingScroll>
             </ListContainer>
@@ -205,30 +159,14 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                 <ComingSoonTitle isDark={isDark}>Cooming soon</ComingSoonTitle>
 
                 {upcomig.map((movie: any) => (
-                    <HMovie key={movie.id}>
-                        <Poster path={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
-                        <HColumn>
-                            <Title isDark={isDark}>
-                                {
-                                    movie.original_title !== '' && movie.original_title.length > 25 ? 
-                                    `${movie.original_title.slice(0, 25)}...` : 
-                                    movie.original_title
-                                }
-                            </Title>
-
-                            <Release isDark={isDark}>
-                                {new Date(movie.release_date).toLocaleDateString('ko')}
-                            </Release>
-
-                            <Overview isDark={isDark}>
-                                {
-                                    movie.overview !== '' && movie.overview.length > 130 ? 
-                                    `${movie.overview.slice(0, 130)}...` : 
-                                    movie.overview
-                                }
-                            </Overview>
-                        </HColumn>
-                    </HMovie>
+                    <HMedia 
+                        key={movie.id}
+                        posterPath={movie.poster_path}
+                        originalTitle={movie.original_title}
+                        overview={movie.overview}
+                        releaseDate={movie.release_date}
+                        isDark={isDark}
+                    />
                 ))}
             </ListContainer>
         </Container>

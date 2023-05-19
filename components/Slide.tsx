@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { BlurView } from 'expo-blur';
 
@@ -43,6 +43,7 @@ interface SlideProps {
     originalTitle: string; 
     voteAverage: number; 
     overview: string;
+    isDark: boolean;
 }
 
 export default function Slide({ 
@@ -50,10 +51,9 @@ export default function Slide({
     posterPath,
     originalTitle, 
     voteAverage, 
-    overview 
+    overview, 
+    isDark
 }: SlideProps): JSX.Element {
-    const isDark = useColorScheme() === 'dark';
-
     return (
         <View style={{ flex: 1 }}>
             <BgImg 
