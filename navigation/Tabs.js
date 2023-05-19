@@ -20,6 +20,7 @@ export default function Tabs() {
             sceneContainerStyle={{ backgroundColor: isDark ? colors.dark : 'white', }}
             initialRouteName='Movies'
             screenOptions={{ 
+                unmountOnBlur: true,
                 tabBarStyle: { backgroundColor: isDark ? colors.dark : 'white', },
                 tabBarActiveTintColor: colors.indigo,
                 tabBarInactiveTintColor: isDark ? '#d3dae2' : '#808e9b',

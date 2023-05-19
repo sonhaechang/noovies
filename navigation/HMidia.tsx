@@ -15,7 +15,7 @@ const Title = styled.Text<{ isDark: boolean }>`
 
 const HMovie = styled.View`
     flex-direction: row;
-    padding: 0px 30px;
+    padding: 0px 20px;
 `;
 
 const HColumn = styled.View`

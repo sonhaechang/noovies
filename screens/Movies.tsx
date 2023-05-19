@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, useColorScheme, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Dimensions, FlatList, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -7,10 +7,12 @@ import Swiper from 'react-native-swiper';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { TMDB_API_KEY } from '@env';
+import { useQuery } from '@tanstack/react-query'
+
 import Slide from '../components/Slide';
 import HMedia from '../navigation/HMidia';
 import VMedia from '../navigation/VMedia';
+import { moviesApi } from '../api';
 
 
 const Loader = styled.ActivityIndicator`
@@ -38,6 +40,14 @@ const ComingSoonTitle = styled(ListTitle)`
     margin-bottom: 20px;
 `
 
+const VSeperator = styled.View`
+    width: 20px;
+`;
+
+const HSeperator = styled.View`
+    height: 20px;
+`;
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type MoviesScreenProps = NativeStackScreenProps<any, 'Movies'>;
@@ -46,51 +56,44 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     const isDark = useColorScheme() === 'dark';
 
     const [refreshing, setRefreshing] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [nowPlaying, setNowPlaying] = useState<any>([]);
-    const [upcomig, setUpcomig] = useState<any>([]);
-    const [trending, setTrending] = useState<any>([]);
 
-    const getNowPlaying = async () => {
-        const url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR`;
-        const {results} = await (await fetch(url)).json();
+    const { isInitialLoading: nowPlayingLoading, data: nowPlayingData } = useQuery(
+        ['nowPlaying'],
+        moviesApi.getNowPlaying
+    );
+    const { isInitialLoading: upcomingLoading, data: upcomingData } = useQuery(
+        ['upcoming'],
+        moviesApi.getUpcommig
+    );
+    const { isInitialLoading: trendingLoading, data: trendingData } = useQuery(
+        ['trending'],
+        moviesApi.getTrending
+    );
 
-        setNowPlaying(results);
-    }
+    const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
+    
+    const onRefresh = async () => {};
 
-    const getUpcommig = async () => {
-        const url = `https://api.themoviedb.org/3/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR`;
-        const {results} = await (await fetch(url)).json();
+    const renderVMedia = ({ item }) => (
+        <VMedia
+            posterPath={item.poster_path}
+            originalTitle={item.original_title}
+            voteAverage={item.vote_average}
+            isDark={isDark}
+        />
+    );
 
-        setUpcomig(results);
-    }
+    const renderHMedia = ({ item }) => (
+        <HMedia
+            posterPath={item.poster_path}
+            originalTitle={item.original_title}
+            overview={item.overview}
+            releaseDate={item.release_date}
+            isDark={isDark}
+        />
+    );
 
-    const getTrending = async () => {
-        const url = `https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_API_KEY}`;
-        const {results} = await (await fetch(url)).json();
-
-        setTrending(results);
-    }
-
-    const getData = async () => {
-        await Promise.all([
-            getNowPlaying(), 
-            getUpcommig(),
-            getTrending(),
-        ])
-        
-        setLoading(false);
-    }
-
-    const onRefresh = async () => {
-        setRefreshing(true);
-        await getData();
-        setRefreshing(false);
-    };
-
-    useEffect(() => {
-        getData();
-    }, [])
+    const movieKeyExtractor = (item) => String(item.id);
 
     return loading ? (
         <Loader>
@@ -116,7 +119,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                         }}
                     >
                         
-                        {nowPlaying.map((movie: any) => (
+                        {nowPlayingData?.results?.map((movie: any) => (
                             <Slide 
                                 key={movie.id} 
                                 backdropPath={movie.backdrop_path}
@@ -136,39 +139,20 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={{ paddingHorizontal: 20 }}
-                            ItemSeparatorComponent={() => (
-                                <View style={{ width: 20 }} />
-                            )}
-                            data={trending}
-                            keyExtractor={(item) => String(item.id)}
-                            renderItem={({ item }) => (
-                                <VMedia
-                                    posterPath={item.poster_path}
-                                    originalTitle={item.original_title}
-                                    voteAverage={item.vote_average}
-                                    isDark={isDark}
-                                />
-                            )}
+                            ItemSeparatorComponent={<VSeperator />}
+                            data={trendingData?.results}
+                            keyExtractor={movieKeyExtractor}
+                            renderItem={renderVMedia}
                         />
                     </ListContainer>
 
                     <ComingSoonTitle isDark={isDark}>Cooming soon</ComingSoonTitle>
                 </>
             }
-            ItemSeparatorComponent={() => (
-                <View style={{ height: 20 }} />
-            )}
-            data={upcomig}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={({ item }) => (
-                <HMedia
-                    posterPath={item.poster_path}
-                    originalTitle={item.original_title}
-                    overview={item.overview}
-                    releaseDate={item.release_date}
-                    isDark={isDark}
-                />
-            )}
+            ItemSeparatorComponent={<HSeperator />}
+            data={upcomingData?.results}
+            keyExtractor={movieKeyExtractor}
+            renderItem={(item) => renderHMedia(item)}
         />
     );
 }
