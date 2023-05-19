@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, StyleSheet } from 'react-native';
+import { ActivityIndicator, Dimensions, StyleSheet, useColorScheme } from 'react-native';
 
 import { BlurView } from 'expo-blur';
 
 import styled from 'styled-components/native';
 
-import Swiper from 'react-native-web-swiper';
+import Swiper from 'react-native-swiper';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -26,11 +26,44 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const BgImg = styled.Image``;
 
-const Title = styled.Text``;
+const Wrapper = styled.View`
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+`;
+
+const Column = styled.View`
+    width: 40%;
+    margin-left: 15px;
+`;
+
+const Poster = styled.Image`
+    width: 100px;
+    height: 160px;
+    border-radius: 5px;
+`;
+
+const Title = styled.Text`
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+`;
+
+const Overview = styled.Text`
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 10px;
+`;
+
+const Votes = styled(Overview)`
+    font-size: 12px;
+`;
 
 type MoviesScreenProps = NativeStackScreenProps<any, 'Movies'>;
 
 export default function Movies({ navigation: { navigate }}: MoviesScreenProps) {
+    const isDark = useColorScheme() === 'dark';
+    
     const [loading, setLoading] = useState<boolean>(true);
     const [nowPlaying, setNowPlaying] = useState<any>([]);
 
@@ -54,8 +87,11 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps) {
         <Container>
             <Swiper 
                 loop
-                timeout={3.5}
-                controlsEnabled={false}
+                horizontal
+                autoplay
+                autoplayTimeout={3.5}
+                showsButtons={false}
+                showsPagination={false}
                 containerStyle={{ 
                     width: '100%', 
                     height: SCREEN_HEIGHT / 4 
@@ -69,10 +105,22 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps) {
                             style={StyleSheet.absoluteFill} 
                         />
                         <BlurView 
-                            intensity={10}
+                            intensity={95}
+                            tint={isDark ? 'dark' : 'light'}
                             style={StyleSheet.absoluteFill}
                         >
-                            <Title>{movie.original_title}</Title>
+                            <Wrapper>
+                                <Poster source={{uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}`}} />
+                                <Column>
+                                    <Title>{movie.original_title}</Title>
+                                    {
+                                        movie.vote_average > 0 ? (
+                                            <Votes>⭐️ {movie.vote_average}/10</Votes>
+                                        ) : null
+                                    }
+                                    <Overview>{movie.overview.slice(0, 90)}...</Overview>                                
+                                </Column>
+                            </Wrapper>
                         </BlurView>
                     </View>
                 ))}
