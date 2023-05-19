@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions } from 'react-native';
+import { ActivityIndicator, Dimensions, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -9,6 +9,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { TMDB_API_KEY } from '@env';
 import Slide from '../components/Slide';
+import Poster from '../components/Poster';
 
 
 const Container = styled.ScrollView``;
@@ -19,11 +20,42 @@ const Loader = styled.ActivityIndicator`
     align-items: center;
 `;
 
+const ListTitle = styled.Text<{ isDark: boolean }>`
+    color: ${(props) => (props.isDark ? 'white' : props.theme.textColor)};
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 20px;
+`;
+
+const TrendingScroll = styled.ScrollView`
+    margin-top: 20px;
+
+`;
+
+const Movie = styled.View`
+    margin-right: 20px;
+    align-items: center;
+`;
+
+const Title = styled.Text<{ isDark: boolean }>`
+    color: ${(props) => (props.isDark ? 'white' : props.theme.textColor)};
+    font-weight: 600;
+    margin-top: 7px;
+    margin-bottom: 5px;
+`;
+
+const Votes = styled.Text<{ isDark: boolean }>`
+    color: ${(props) => (props.isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.8)')};
+    font-size: 10px;
+`;
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type MoviesScreenProps = NativeStackScreenProps<any, 'Movies'>;
 
 export default function Movies({ navigation: { navigate }}: MoviesScreenProps): JSX.Element {
+    const isDark = useColorScheme() === 'dark';
+
     const [loading, setLoading] = useState<boolean>(true);
     const [nowPlaying, setNowPlaying] = useState<any>([]);
     const [upcommig, setUpcommig] = useState<any>([]);
@@ -44,7 +76,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     }
 
     const getTrending = async () => {
-        const url = `https://api.themoviedb.org/3/trending/movie/week/?api_key=${TMDB_API_KEY}`;
+        const url = `https://api.themoviedb.org/3/trending/movie/week?api_key=${TMDB_API_KEY}`;
         const {results} = await (await fetch(url)).json();
 
         setTrending(results);
@@ -79,7 +111,8 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                 showsPagination={false}
                 containerStyle={{ 
                     width: '100%', 
-                    height: SCREEN_HEIGHT / 4 
+                    height: SCREEN_HEIGHT / 4,
+                    marginBottom: 30
                 }}
             >
                 
@@ -94,6 +127,29 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                     />
                 ))}
             </Swiper>
+
+            <ListTitle isDark={isDark}>Tranding Movies</ListTitle>
+
+            <TrendingScroll 
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingLeft: 30 }}
+            >
+                {trending.map((movie: any) => (
+                    <Movie key={movie.id}>
+                        <Poster path={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
+
+                        <Title isDark={isDark}>
+                            {movie.original_title.slice(0, 13)}
+                            {movie.original_title.length > 13 ? '...' : null}
+                        </Title>
+
+                        <Votes isDark={isDark}>
+                            ⭐️ {movie.vote_average}/10
+                        </Votes>
+                    </Movie>
+                ))}
+            </TrendingScroll>
         </Container>
     );
 }

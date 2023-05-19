@@ -67,7 +67,7 @@ export default function Slide({
             >
                 <Wrapper>
                     <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
-                    
+
                     <Column>
                         <Title isDark={isDark}>
                             {originalTitle}
@@ -80,7 +80,8 @@ export default function Slide({
                             ) : null
                         }
                         <Overview isDark={isDark}>
-                            {overview.slice(0, 90)}...
+                            {overview.slice(0, 100)}...
+                            {overview.length > 100 ? '...' : null}
                         </Overview>                                
                     </Column>
                 </Wrapper>
