@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, RefreshControl, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, useColorScheme, View } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -12,8 +12,6 @@ import Slide from '../components/Slide';
 import HMedia from '../navigation/HMidia';
 import VMedia from '../navigation/VMedia';
 
-
-const Container = styled.ScrollView``;
 
 const Loader = styled.ActivityIndicator`
     flex: 1;
@@ -99,78 +97,78 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
             <ActivityIndicator />
         </Loader>
     ) : (
-        <Container
-            refreshControl={
-                <RefreshControl 
-                    refreshing={refreshing} 
-                    onRefresh={onRefresh}
-                />
-            }
-        >
-            <Swiper 
-                loop
-                horizontal
-                autoplay
-                autoplayTimeout={3.5}
-                showsButtons={false}
-                showsPagination={false}
-                containerStyle={{ 
-                    width: '100%', 
-                    height: SCREEN_HEIGHT / 4,
-                    marginBottom: 30
-                }}
-            >
-                
-                {nowPlaying.map((movie: any) => (
-                    <Slide 
-                        key={movie.id} 
-                        backdropPath={movie.backdrop_path}
-                        posterPath={movie.poster_path}
-                        originalTitle={movie.original_title}
-                        voteAverage={movie.vote_average}
-                        overview={movie.overview}
-                        isDark={isDark}
-                    />
-                ))}
-            </Swiper>
+        <FlatList 
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            ListHeaderComponent={
+                <>
+                    <Swiper 
+                        loop
+                        horizontal
+                        autoplay
+                        autoplayTimeout={3.5}
+                        showsButtons={false}
+                        showsPagination={false}
+                        containerStyle={{ 
+                            width: '100%', 
+                            height: SCREEN_HEIGHT / 4,
+                            marginBottom: 30
+                        }}
+                    >
+                        
+                        {nowPlaying.map((movie: any) => (
+                            <Slide 
+                                key={movie.id} 
+                                backdropPath={movie.backdrop_path}
+                                posterPath={movie.poster_path}
+                                originalTitle={movie.original_title}
+                                voteAverage={movie.vote_average}
+                                overview={movie.overview}
+                                isDark={isDark}
+                            />
+                        ))}
+                    </Swiper>
 
-            <ListContainer>
-                <ListTitle isDark={isDark}>Tranding Movies</ListTitle>
+                    <ListContainer>
+                        <ListTitle isDark={isDark}>Tranding Movies</ListTitle>
 
-                <TrendingScroll 
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingHorizontal: 20 }}
-                    keyExtractor={(item) => String(item.id)}
-                    ItemSeparatorComponent={() => (
-                        <View style={{ width: 20 }} />
-                    )}
-                    data={trending}
-                    renderItem={({ item }) => (
-                        <VMedia
-                            posterPath={item.poster_path}
-                            originalTitle={item.original_title}
-                            voteAverage={item.vote_average}
-                            isDark={isDark}
+                        <TrendingScroll 
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingHorizontal: 20 }}
+                            ItemSeparatorComponent={() => (
+                                <View style={{ width: 20 }} />
+                            )}
+                            data={trending}
+                            keyExtractor={(item) => String(item.id)}
+                            renderItem={({ item }) => (
+                                <VMedia
+                                    posterPath={item.poster_path}
+                                    originalTitle={item.original_title}
+                                    voteAverage={item.vote_average}
+                                    isDark={isDark}
+                                />
+                            )}
                         />
-                    )}
+                    </ListContainer>
+
+                    <ComingSoonTitle isDark={isDark}>Cooming soon</ComingSoonTitle>
+                </>
+            }
+            ItemSeparatorComponent={() => (
+                <View style={{ height: 20 }} />
+            )}
+            data={upcomig}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+                <HMedia
+                    posterPath={item.poster_path}
+                    originalTitle={item.original_title}
+                    overview={item.overview}
+                    releaseDate={item.release_date}
+                    isDark={isDark}
                 />
-            </ListContainer>
-
-            <ListContainer>
-                <ComingSoonTitle isDark={isDark}>Cooming soon</ComingSoonTitle>
-
-                {upcomig.map((movie: any) => (
-                    <HMedia 
-                        key={movie.id}
-                        posterPath={movie.poster_path}
-                        originalTitle={movie.original_title}
-                        overview={movie.overview}
-                        releaseDate={movie.release_date}
-                        isDark={isDark}
-                    />
-                ))}
-            </ListContainer>
-        </Container>
+            )}
+        />
     );
 }
