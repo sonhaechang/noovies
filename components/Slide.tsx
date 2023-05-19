@@ -80,8 +80,11 @@ export default function Slide({
                             ) : null
                         }
                         <Overview isDark={isDark}>
-                            {overview.slice(0, 100)}...
-                            {overview.length > 100 ? '...' : null}
+                            {
+                                   overview !== '' &&overview.length > 130 ? 
+                                   `${overview.slice(0, 130)}...` : 
+                                   overview
+                            }
                         </Overview>                                
                     </Column>
                 </Wrapper>
