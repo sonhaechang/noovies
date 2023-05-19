@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, useColorScheme } from 'react-native';
+import { ActivityIndicator, Dimensions, RefreshControl, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -86,6 +86,7 @@ type MoviesScreenProps = NativeStackScreenProps<any, 'Movies'>;
 export default function Movies({ navigation: { navigate }}: MoviesScreenProps): JSX.Element {
     const isDark = useColorScheme() === 'dark';
 
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [nowPlaying, setNowPlaying] = useState<any>([]);
     const [upcomig, setUpcomig] = useState<any>([]);
@@ -122,6 +123,12 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         setLoading(false);
     }
 
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await getData();
+        setRefreshing(false);
+    };
+
     useEffect(() => {
         getData();
     }, [])
@@ -131,7 +138,14 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
             <ActivityIndicator />
         </Loader>
     ) : (
-        <Container>
+        <Container
+            refreshControl={
+                <RefreshControl 
+                    refreshing={refreshing} 
+                    onRefresh={onRefresh}
+                />
+            }
+        >
             <Swiper 
                 loop
                 horizontal
