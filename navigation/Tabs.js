@@ -17,6 +17,7 @@ export default function Tabs() {
 
     return (
         <Tab.Navigator 
+            sceneContainerStyle={{ backgroundColor: isDark ? colors.dark : 'white', }}
             initialRouteName='Movies'
             screenOptions={{ 
                 tabBarStyle: { backgroundColor: isDark ? colors.dark : 'white', },
