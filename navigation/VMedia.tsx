@@ -7,7 +7,6 @@ import Votes from './Votes';
 
 
 const Movie = styled.View`
-  margin-right: 20px;
   align-items: center;
 `;
 
@@ -36,8 +35,8 @@ export default function VMedia({
             <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
 
             <Title isDark={isDark}>
-                {originalTitle.slice(0, 13)}
-                {originalTitle.length > 13 ? "..." : null}
+                {originalTitle.slice(0, 12)}
+                {originalTitle.length > 12 ? "..." : null}
             </Title>
 
             <Votes votes={voteAverage} />

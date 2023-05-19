@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, RefreshControl, useColorScheme } from 'react-native';
+import { ActivityIndicator, Dimensions, RefreshControl, useColorScheme, View } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -28,9 +28,8 @@ const ListTitle = styled.Text<{ isDark: boolean }>`
     margin-left: 20px;
 `;
 
-const TrendingScroll = styled.ScrollView`
+const TrendingScroll = styled.FlatList`
     margin-top: 20px;
-
 `;
 
 const ListContainer = styled.View`
@@ -141,18 +140,21 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                 <TrendingScroll 
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingLeft: 30 }}
-                >
-                    {trending.map((movie: any) => (
+                    contentContainerStyle={{ paddingHorizontal: 20 }}
+                    keyExtractor={(item) => String(item.id)}
+                    ItemSeparatorComponent={() => (
+                        <View style={{ width: 20 }} />
+                    )}
+                    data={trending}
+                    renderItem={({ item }) => (
                         <VMedia
-                            key={movie.id}
-                            posterPath={movie.poster_path}
-                            originalTitle={movie.original_title}
-                            voteAverage={movie.vote_average}
+                            posterPath={item.poster_path}
+                            originalTitle={item.original_title}
+                            voteAverage={item.vote_average}
                             isDark={isDark}
                         />
-                    ))}
-                </TrendingScroll>
+                    )}
+                />
             </ListContainer>
 
             <ListContainer>
