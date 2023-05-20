@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Slide from '../components/Slide';
 import HMedia from '../navigation/HMidia';
 import VMedia from '../navigation/VMedia';
-import { moviesApi } from '../api';
+import { Movie, MovieResponse, moviesApi } from '../api';
 
 
 const Loader = styled.ActivityIndicator`
@@ -28,7 +28,7 @@ const ListTitle = styled.Text<{ isDark: boolean }>`
     margin-left: 20px;
 `;
 
-const TrendingScroll = styled.FlatList`
+const TrendingScroll = styled(FlatList<Movie>)`
     margin-top: 20px;
 `;
 
@@ -60,19 +60,19 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         isInitialLoading: nowPlayingLoading, 
         data: nowPlayingData, 
         isRefetching: isRefetchingNowPlaying
-    } = useQuery(['movies', 'nowPlaying'], moviesApi.getNowPlaying);
+    } = useQuery<MovieResponse>(['movies', 'nowPlaying'], moviesApi.getNowPlaying);
 
     const { 
         isInitialLoading: upcomingLoading, 
         data: upcomingData,
         isRefetching: isRefetchingUpcoming
-    } = useQuery(['movies', 'upcoming'], moviesApi.getUpcommig);
+    } = useQuery<MovieResponse>(['movies', 'upcoming'], moviesApi.getUpcommig);
     
     const { 
         isInitialLoading: trendingLoading, 
         data: trendingData,
         isRefetching: refetchingTrending
-    } = useQuery(['movies', 'trending'], moviesApi.getTrending);
+    } = useQuery<MovieResponse>(['movies', 'trending'], moviesApi.getTrending);
 
     const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
     const refreshing = isRefetchingNowPlaying || isRefetchingUpcoming || refetchingTrending;
@@ -81,18 +81,18 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         queryClient.refetchQueries(['movies']);
     };
 
-    const renderVMedia = ({ item }) => (
+    const renderVMedia = ({ item }: {item: Movie}) => (
         <VMedia
-            posterPath={item.poster_path}
+            posterPath={item.poster_path || ''}
             originalTitle={item.original_title}
             voteAverage={item.vote_average}
             isDark={isDark}
         />
     );
 
-    const renderHMedia = ({ item }) => (
+    const renderHMedia = ({ item }: {item: Movie}) => (
         <HMedia
-            posterPath={item.poster_path}
+            posterPath={item.poster_path || ''}
             originalTitle={item.original_title}
             overview={item.overview}
             releaseDate={item.release_date}
@@ -100,13 +100,11 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         />
     );
 
-    const movieKeyExtractor = (item) => String(item.id);
-
     return loading ? (
         <Loader>
             <ActivityIndicator />
         </Loader>
-    ) : (
+    ) : upcomingData ? (
         <FlatList 
             onRefresh={onRefresh}
             refreshing={refreshing}
@@ -142,25 +140,28 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
 
                     <ListContainer>
                         <ListTitle isDark={isDark}>Tranding Movies</ListTitle>
-
-                        <TrendingScroll 
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingHorizontal: 20 }}
-                            ItemSeparatorComponent={<VSeperator />}
-                            data={trendingData?.results}
-                            keyExtractor={movieKeyExtractor}
-                            renderItem={renderVMedia}
-                        />
+                        { 
+                            trendingData ? (
+                                <TrendingScroll 
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={{ paddingHorizontal: 20 }}
+                                    ItemSeparatorComponent={VSeperator}
+                                    data={trendingData.results}
+                                    keyExtractor={(item) => String(item.id)}
+                                    renderItem={renderVMedia}
+                                />
+                            ) : null
+                        }
                     </ListContainer>
 
                     <ComingSoonTitle isDark={isDark}>Cooming soon</ComingSoonTitle>
                 </>
             }
-            ItemSeparatorComponent={<HSeperator />}
-            data={upcomingData?.results}
-            keyExtractor={movieKeyExtractor}
-            renderItem={(item) => renderHMedia(item)}
+            ItemSeparatorComponent={HSeperator}
+            data={upcomingData.results}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={renderHMedia}
         />
-    );
+    ) : <></>;
 }
