@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dimensions, FlatList, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
@@ -39,29 +39,29 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     const isDark = useColorScheme() === 'dark';
     const queryClient = useQueryClient();
 
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
     const { 
         isInitialLoading: nowPlayingLoading, 
-        data: nowPlayingData, 
-        isRefetching: isRefetchingNowPlaying
+        data: nowPlayingData
     } = useQuery<MovieResponse>(['movies', 'nowPlaying'], moviesApi.getNowPlaying);
 
     const { 
         isInitialLoading: upcomingLoading, 
-        data: upcomingData,
-        isRefetching: isRefetchingUpcoming
+        data: upcomingData
     } = useQuery<MovieResponse>(['movies', 'upcoming'], moviesApi.getUpcommig);
     
     const { 
         isInitialLoading: trendingLoading, 
-        data: trendingData,
-        isRefetching: refetchingTrending
+        data: trendingData
     } = useQuery<MovieResponse>(['movies', 'trending'], moviesApi.getTrending);
 
     const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
-    const refreshing = isRefetchingNowPlaying || isRefetchingUpcoming || refetchingTrending;
 
     const onRefresh = async () => {
-        queryClient.refetchQueries(['movies']);
+        setRefreshing(true);
+        await queryClient.refetchQueries(['movies']);
+        setRefreshing(false);
     };
 
     const renderHMedia = ({ item }: {item: Movie}) => (
