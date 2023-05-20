@@ -7,7 +7,7 @@ import Swiper from 'react-native-swiper';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Slide from '../components/Slide';
 import HMedia from '../navigation/HMidia';
@@ -54,25 +54,32 @@ type MoviesScreenProps = NativeStackScreenProps<any, 'Movies'>;
 
 export default function Movies({ navigation: { navigate }}: MoviesScreenProps): JSX.Element {
     const isDark = useColorScheme() === 'dark';
+    const queryClient = useQueryClient();
 
-    const [refreshing, setRefreshing] = useState<boolean>(false);
+    const { 
+        isInitialLoading: nowPlayingLoading, 
+        data: nowPlayingData, 
+        isRefetching: isRefetchingNowPlaying
+    } = useQuery(['movies', 'nowPlaying'], moviesApi.getNowPlaying);
 
-    const { isInitialLoading: nowPlayingLoading, data: nowPlayingData } = useQuery(
-        ['nowPlaying'],
-        moviesApi.getNowPlaying
-    );
-    const { isInitialLoading: upcomingLoading, data: upcomingData } = useQuery(
-        ['upcoming'],
-        moviesApi.getUpcommig
-    );
-    const { isInitialLoading: trendingLoading, data: trendingData } = useQuery(
-        ['trending'],
-        moviesApi.getTrending
-    );
+    const { 
+        isInitialLoading: upcomingLoading, 
+        data: upcomingData,
+        isRefetching: isRefetchingUpcoming
+    } = useQuery(['movies', 'upcoming'], moviesApi.getUpcommig);
+    
+    const { 
+        isInitialLoading: trendingLoading, 
+        data: trendingData,
+        isRefetching: refetchingTrending
+    } = useQuery(['movies', 'trending'], moviesApi.getTrending);
 
     const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
-    
-    const onRefresh = async () => {};
+    const refreshing = isRefetchingNowPlaying || isRefetchingUpcoming || refetchingTrending;
+
+    const onRefresh = async () => {
+        queryClient.refetchQueries(['movies']);
+    };
 
     const renderVMedia = ({ item }) => (
         <VMedia
@@ -103,6 +110,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         <FlatList 
             onRefresh={onRefresh}
             refreshing={refreshing}
+            showsVerticalScrollIndicator={false}
             ListHeaderComponent={
                 <>
                     <Swiper 
