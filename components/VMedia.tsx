@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled from 'styled-components/native';
 
-import Poster from '../components/Poster';
+import Poster from './Poster';
 import Votes from './Votes';
 
 

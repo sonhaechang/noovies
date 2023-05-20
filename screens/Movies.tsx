@@ -10,8 +10,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Slide from '../components/Slide';
-import HMedia from '../navigation/HMidia';
-import VMedia from '../navigation/VMedia';
+import HMedia from '../components/HMidia';
+import VMedia from '../components/VMedia';
 import { Movie, MovieResponse, moviesApi } from '../api';
 import Loader from '../components/Loader';
 

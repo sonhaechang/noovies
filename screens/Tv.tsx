@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { tvApi } from '../api';
 import Loader from '../components/Loader';
-import VMedia from '../navigation/VMedia';
+import VMedia from '../components/VMedia';
 
 
 export default function Tv(): JSX.Element {
