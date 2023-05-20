@@ -1,7 +1,9 @@
+import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { useColorScheme } from 'react-native';
+import { Alert, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
+import { moviesApi, tvApi } from '../api';
 
 
 const Container = styled.ScrollView``;
@@ -19,9 +21,26 @@ export default function Search(): JSX.Element {
 
     const [query, setQuery] = useState<string>('');
 
+    const { isLoading: moviesLoading, data: moviesData, refetch: searchMovies } = useQuery(
+        ['searchMovies', query],
+        moviesApi.getSearch,
+        { enabled: false }
+    );
+
+    const { isLoading: tvLoading, data: tvData, refetch: searchTv } = useQuery(
+        ['searchTv', query],
+        tvApi.getSearch,
+        { enabled: false }
+    );
+
     const onChangeText = (text: string) => setQuery(text);
 
-    console.log(query);
+    const onSubmit = () => {
+        if (query !== '') {
+            searchMovies();
+            searchTv();
+        }
+    };
 
     return (
         <Container>
@@ -31,6 +50,7 @@ export default function Search(): JSX.Element {
                 returnKeyType='search'
                 returnKeyLabel='search'
                 onChangeText={onChangeText}
+                onSubmitEditing={onSubmit}
             />
         </Container>
     );
