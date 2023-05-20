@@ -1,77 +1,73 @@
 import React from 'react';
-import { FlatList, ScrollView, useColorScheme } from 'react-native';
+import { RefreshControl, ScrollView, useColorScheme } from 'react-native';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { tvApi } from '../api';
 import Loader from '../components/Loader';
-import VMedia from '../components/VMedia';
+import HList from '../components/HList';
 
 
 export default function Tv(): JSX.Element {
     const isDark = useColorScheme() === 'dark';
+    const queryClient = useQueryClient();
 
     const {
         isInitialLoading: todayLoading, 
         data: todayData, 
+        isRefetching: todayRefetchingtoday,
     } = useQuery(['tv', 'today'], tvApi.getAiringToday);
 
     const {
         isInitialLoading: topLoading, 
         data: topData, 
+        isRefetching: topRefetching
     } = useQuery(['tv', 'top'], tvApi.getTopRated);
 
     const {
         isInitialLoading: trendingLoading, 
         data: trendingData, 
+        isRefetching: trendingRefetching
     } = useQuery(['tv', 'trending'], tvApi.getTrending);
 
     const loading = todayLoading || topLoading || trendingLoading;
 
+    const refreshing = todayRefetchingtoday || topRefetching || trendingRefetching;
+
+    const onRefresh = async () => {
+        queryClient.refetchQueries(['tv']);
+    };
+
+    
     if (loading) { return <Loader />; }
 
     return (
-        <ScrollView>
-            <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
+        <ScrollView 
+            contentContainerStyle={{ paddingVertical: 20 }}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+                <RefreshControl 
+                    refreshing={refreshing} 
+                    onRefresh={onRefresh}
+                />
+            }
+        >
+            <HList 
+                title='Trendig TV' 
                 data={trendingData.results}
-                renderItem={({ item }) => (
-                    <VMedia 
-                        posterPath={item.poster_path}
-                        originalTitle={item.original_name}
-                        voteAverage={item.vote_average}
-                        isDark={isDark}
-                    />
-                )}
+                isDark={isDark}
             />
 
-            <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
+            <HList 
+                title='Airing Today' 
                 data={todayData.results}
-                renderItem={({ item }) => (
-                    <VMedia 
-                        posterPath={item.poster_path}
-                        originalTitle={item.original_name}
-                        voteAverage={item.vote_average}
-                        isDark={isDark}
-                    />
-                )}
+                isDark={isDark}
             />
 
-            <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
+            <HList 
+                title='Top Rated TV' 
                 data={topData.results}
-                renderItem={({ item }) => (
-                    <VMedia 
-                        posterPath={item.poster_path}
-                        originalTitle={item.original_name}
-                        voteAverage={item.vote_average}
-                        isDark={isDark}
-                    />
-                )}
+                isDark={isDark}
             />
         </ScrollView>
     );

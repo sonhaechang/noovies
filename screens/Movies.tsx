@@ -11,9 +11,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Slide from '../components/Slide';
 import HMedia from '../components/HMidia';
-import VMedia from '../components/VMedia';
 import { Movie, MovieResponse, moviesApi } from '../api';
 import Loader from '../components/Loader';
+import HList from '../components/HList';
 
 
 const ListTitle = styled.Text<{ isDark: boolean }>`
@@ -23,21 +23,9 @@ const ListTitle = styled.Text<{ isDark: boolean }>`
     margin-left: 20px;
 `;
 
-const TrendingScroll = styled(FlatList<Movie>)`
-    margin-top: 20px;
-`;
-
-const ListContainer = styled.View`
-    margin-bottom: 40px;
-`;
-
 const ComingSoonTitle = styled(ListTitle)`
     margin-bottom: 20px;
 `
-
-const VSeperator = styled.View`
-    width: 20px;
-`;
 
 const HSeperator = styled.View`
     height: 20px;
@@ -75,15 +63,6 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     const onRefresh = async () => {
         queryClient.refetchQueries(['movies']);
     };
-
-    const renderVMedia = ({ item }: {item: Movie}) => (
-        <VMedia
-            posterPath={item.poster_path || ''}
-            originalTitle={item.original_title}
-            voteAverage={item.vote_average}
-            isDark={isDark}
-        />
-    );
 
     const renderHMedia = ({ item }: {item: Movie}) => (
         <HMedia
@@ -131,22 +110,11 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                         ))}
                     </Swiper>
 
-                    <ListContainer>
-                        <ListTitle isDark={isDark}>Tranding Movies</ListTitle>
-                        { 
-                            trendingData ? (
-                                <TrendingScroll 
-                                    horizontal
-                                    showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={{ paddingHorizontal: 20 }}
-                                    ItemSeparatorComponent={VSeperator}
-                                    data={trendingData.results}
-                                    keyExtractor={(item) => String(item.id)}
-                                    renderItem={renderVMedia}
-                                />
-                            ) : null
-                        }
-                    </ListContainer>
+                    {
+                        trendingData ? (
+                            <HList title='Tranding Movies' data={trendingData.results} isDark={isDark}/>
+                        ) : <></>
+                    }
 
                     <ComingSoonTitle isDark={isDark}>Cooming soon</ComingSoonTitle>
                 </>
