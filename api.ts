@@ -46,3 +46,21 @@ export const moviesApi = {
             `${BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR`
         ).then(res => res.json()),
 };
+
+export const tvApi = {
+    getTrending: () => 
+        fetch(
+            `${BASE_URL}/trending/tv/week?api_key=${TMDB_API_KEY}&region=KR`
+        ).then(res => res.json()),
+
+    getAiringToday: () => 
+        fetch(
+            `${BASE_URL}/tv/airing_today?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR`
+        ).then(res => res.json()),
+
+    getTopRated: () => 
+        fetch(
+            `${BASE_URL}/tv/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR`
+        ).then(res => res.json()),
+}
+

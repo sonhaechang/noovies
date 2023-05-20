@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Dimensions, FlatList, useColorScheme } from 'react-native';
+import React from 'react';
+import { Dimensions, FlatList, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -13,13 +13,8 @@ import Slide from '../components/Slide';
 import HMedia from '../navigation/HMidia';
 import VMedia from '../navigation/VMedia';
 import { Movie, MovieResponse, moviesApi } from '../api';
+import Loader from '../components/Loader';
 
-
-const Loader = styled.ActivityIndicator`
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-`;
 
 const ListTitle = styled.Text<{ isDark: boolean }>`
     color: ${(props) => (props.isDark ? 'white' : props.theme.textColor)};
@@ -101,9 +96,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     );
 
     return loading ? (
-        <Loader>
-            <ActivityIndicator />
-        </Loader>
+        <Loader />
     ) : upcomingData ? (
         <FlatList 
             onRefresh={onRefresh}
