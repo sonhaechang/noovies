@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
 
 import { BlurView } from 'expo-blur';
 
 import styled from 'styled-components/native';
 import Poster from './Poster';
+
 
 const View = styled.View`flex: 1;`;
 
@@ -54,41 +57,58 @@ export default function Slide({
     overview, 
     isDark
 }: SlideProps): JSX.Element {
-    return (
-        <View style={{ flex: 1 }}>
-            <BgImg 
-                source={{uri: `https://image.tmdb.org/t/p/w500${backdropPath}`}} 
-                style={StyleSheet.absoluteFill} 
-            />
-            <BlurView 
-                intensity={95}
-                tint={isDark ? 'dark' : 'light'}
-                style={StyleSheet.absoluteFill}
-            >
-                <Wrapper>
-                    <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
+    const navigation = useNavigation();
 
-                    <Column>
-                        <Title isDark={isDark}>
-                            {originalTitle}
-                        </Title>
-                        {
-                            voteAverage > 0 ? (
-                                <Votes isDark={isDark}>
-                                    ⭐️ {voteAverage}/10
-                                </Votes>
-                            ) : null
-                        }
-                        <Overview isDark={isDark}>
+    const goToDetail = () => {
+        //@ts-ignore
+        navigation.navigate(
+            'Stack', 
+            { 
+                screen: 'Detail',
+                params: {
+                    originalTitle,
+                },
+            }
+        );
+    };
+
+    return (
+        <TouchableWithoutFeedback onPress={goToDetail}>
+            <View style={{ flex: 1 }}>
+                <BgImg 
+                    source={{uri: `https://image.tmdb.org/t/p/w500${backdropPath}`}} 
+                    style={StyleSheet.absoluteFill} 
+                />
+                <BlurView 
+                    intensity={95}
+                    tint={isDark ? 'dark' : 'light'}
+                    style={StyleSheet.absoluteFill}
+                >
+                    <Wrapper>
+                        <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
+
+                        <Column>
+                            <Title isDark={isDark}>
+                                {originalTitle}
+                            </Title>
                             {
-                                   overview !== '' &&overview.length > 130 ? 
-                                   `${overview.slice(0, 130)}...` : 
-                                   overview
+                                voteAverage > 0 ? (
+                                    <Votes isDark={isDark}>
+                                        ⭐️ {voteAverage}/10
+                                    </Votes>
+                                ) : null
                             }
-                        </Overview>                                
-                    </Column>
-                </Wrapper>
-            </BlurView>
-        </View>
+                            <Overview isDark={isDark}>
+                                {
+                                    overview !== '' &&overview.length > 130 ? 
+                                    `${overview.slice(0, 130)}...` : 
+                                    overview
+                                }
+                            </Overview>                                
+                        </Column>
+                    </Wrapper>
+                </BlurView>
+            </View>
+        </TouchableWithoutFeedback>
     );
 }

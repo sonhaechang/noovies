@@ -1,9 +1,13 @@
-import React from "react";
+import React from 'react';
+import { TouchableOpacity } from 'react-native';
 
 import styled from 'styled-components/native';
 
-import Poster from "./Poster";
-import Votes from "./Votes";
+import { useNavigation } from '@react-navigation/native';
+
+import Poster from './Poster';
+import Votes from './Votes';
+
 
 
 const Title = styled.Text<{ isDark: boolean }>`
@@ -51,37 +55,54 @@ export default function HMedia({
     voteAverage,
     isDark
 }: HMediaProps): JSX.Element {
+    const navigation = useNavigation();
+
+    const goToDetail = () => {
+        //@ts-ignore
+        navigation.navigate(
+            'Stack', 
+            { 
+                screen: 'Detail',
+                params: {
+                    originalTitle,
+                },
+            }
+        );
+    };
+
     return (
-        <HMovie>
-            <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
+        <TouchableOpacity onPress={goToDetail}>
+            <HMovie>
+                <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
 
-            <HColumn>
-                <Title isDark={isDark}>
+                <HColumn>
+                    <Title isDark={isDark}>
+                        {
+                            originalTitle !== '' && originalTitle.length > 25 ? 
+                            `${originalTitle.slice(0, 25)}...` : 
+                            originalTitle
+                        }
+                    </Title>
+
                     {
-                        originalTitle !== '' && originalTitle.length > 25 ? 
-                        `${originalTitle.slice(0, 25)}...` : 
-                        originalTitle
+                        releaseDate ? (
+                            <Release isDark={isDark}>
+                                {new Date(releaseDate).toLocaleDateString('ko')}
+                            </Release> 
+                        ) : null
                     }
-                </Title>
+                        
+                    {voteAverage ? <Votes votes={voteAverage} /> : null}
 
-                {
-                    releaseDate ? (
-                        <Release isDark={isDark}>
-                            {new Date(releaseDate).toLocaleDateString('ko')}
-                        </Release> 
-                    ) : null
-                }
-                    
-                {voteAverage ? <Votes votes={voteAverage} /> : null}
-
-                <Overview isDark={isDark}>
-                    {
-                        overview !== '' && overview.length > 130 ? 
-                        `${overview.slice(0, 130)}...` : 
-                        overview
-                    }
-                </Overview>
-            </HColumn>
-        </HMovie>
+                    <Overview isDark={isDark}>
+                        {
+                            overview !== '' && overview.length > 130 ? 
+                            `${overview.slice(0, 130)}...` : 
+                            overview
+                        }
+                    </Overview>
+                </HColumn>
+            </HMovie>
+        </TouchableOpacity>
     )
 }
