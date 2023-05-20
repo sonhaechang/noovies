@@ -5,6 +5,7 @@ import { Alert, useColorScheme } from 'react-native';
 import styled from 'styled-components/native';
 import { moviesApi, tvApi } from '../api';
 import Loader from '../components/Loader';
+import HList from '../components/HList';
 
 
 const Container = styled.ScrollView``;
@@ -15,6 +16,7 @@ const SearchBar = styled.TextInput`
     border-radius: 15px;
     width: 90%;
     margin: 10px auto;
+    margin-bottom: 40px;
 `;
 
 export default function Search(): JSX.Element {
@@ -57,6 +59,26 @@ export default function Search(): JSX.Element {
             />
 
             { moviesLoading || tvLoading ? <Loader /> : <></>}
+
+            {
+                moviesData ? (
+                    <HList 
+                        title='Movie Results' 
+                        data={moviesData.results} 
+                        isDark={isDark} 
+                    /> 
+                ): <></>
+            }
+
+            {
+                tvData ? (
+                    <HList 
+                        title='Tv Results' 
+                        data={tvData.results} 
+                        isDark={isDark} 
+                    /> 
+                ): <></>
+            }
         </Container>
     );
 }

@@ -46,7 +46,9 @@ export default function HList({ title, data, isDark }: HListProps): JSX.Element 
                     <VMedia 
                         posterPath={item.poster_path}
                         originalTitle={
-                            item.original_title ?? item.original_name
+                            'original_title' in item ? 
+                            `${item.original_title.slice(0, 9)}...` : 
+                            `${item.original_name.slice(0, 9)}...`
                         }
                         voteAverage={item.vote_average}
                         isDark={isDark}
