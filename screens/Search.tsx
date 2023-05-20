@@ -4,6 +4,7 @@ import { Alert, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
 import { moviesApi, tvApi } from '../api';
+import Loader from '../components/Loader';
 
 
 const Container = styled.ScrollView``;
@@ -21,25 +22,27 @@ export default function Search(): JSX.Element {
 
     const [query, setQuery] = useState<string>('');
 
-    const { isLoading: moviesLoading, data: moviesData, refetch: searchMovies } = useQuery(
-        ['searchMovies', query],
-        moviesApi.getSearch,
-        { enabled: false }
-    );
+    const { isInitialLoading: moviesLoading, data: moviesData, refetch: searchMovies } = useQuery({
+        queryKey: ['searchMovies', query],
+        queryFn: moviesApi.getSearch,
+        enabled: false,
+    });
 
-    const { isLoading: tvLoading, data: tvData, refetch: searchTv } = useQuery(
-        ['searchTv', query],
-        tvApi.getSearch,
-        { enabled: false }
-    );
+    const { isInitialLoading: tvLoading, data: tvData, refetch: searchTv } = useQuery({
+        queryKey: ['searchTv', query],
+        queryFn: tvApi.getSearch,
+        enabled: false,
+    });
 
     const onChangeText = (text: string) => setQuery(text);
 
     const onSubmit = () => {
-        if (query !== '') {
-            searchMovies();
-            searchTv();
+        if (query == '') {
+            return;
         }
+
+        searchMovies();
+        searchTv();
     };
 
     return (
@@ -52,6 +55,8 @@ export default function Search(): JSX.Element {
                 onChangeText={onChangeText}
                 onSubmitEditing={onSubmit}
             />
+
+            { moviesLoading || tvLoading ? <Loader /> : <></>}
         </Container>
     );
 }
