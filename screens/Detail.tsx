@@ -4,11 +4,13 @@ import { Dimensions, StyleSheet, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
 
+import { useQuery } from '@tanstack/react-query';
+
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { Movie, TV } from '../api';
+import { Movie, TV, moviesApi, tvApi } from '../api';
 import { makeImgPath } from '../utils';
 import { colors } from '../colors';
 import Poster from '../components/Poster';
@@ -59,6 +61,18 @@ export default function Detail({
 }: DetailScreenProps): JSX.Element {
     const isDark = useColorScheme() === 'dark';
 
+    const { isInitialLoading: moviesLoading, data: moviesData, } = useQuery({
+        queryKey: ['movies', params.id], 
+        queryFn: moviesApi.getDetail,
+        enabled: 'original_title' in params,
+    });
+
+    const { isInitialLoading: tvLoading, data: tvData, } = useQuery({
+        queryKey: ['movies', params.id], 
+        queryFn: tvApi.getDetail,
+        enabled: 'original_name' in params,
+    });
+
     useEffect(() => {
         setOptions({
             title: 'original_title' in params ? 'Movie' : 'TV Show',
@@ -73,7 +87,6 @@ export default function Detail({
                     style={StyleSheet.absoluteFill}
                 />
                 <LinearGradient
-                    // Background Linear Gradient
                     colors={['transparent', colors.dark]}
                     style={StyleSheet.absoluteFill}
                 />

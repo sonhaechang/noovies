@@ -80,6 +80,14 @@ export const moviesApi: Fetchers<MovieResponse> = {
             `${BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR&query=${query}`
         ).then(res => res.json())
     },
+
+    getDetail: ({ queryKey }: any) => {
+        const [_, id] = queryKey;
+
+        return fetch(
+            `${BASE_URL}/movie/${id}?api_key=${TMDB_API_KEY}&append_to_response=videos,iamges`
+        ).then(res => res.json())
+    },
 };
 
 export const tvApi: Fetchers<TVResponse> = {
@@ -103,6 +111,14 @@ export const tvApi: Fetchers<TVResponse> = {
 
         return fetch(
             `${BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR&query=${query}`
+        ).then(res => res.json())
+    },
+
+    getDetail: ({ queryKey }: any) => {
+        const [_, id] = queryKey;
+
+        return fetch(
+            `${BASE_URL}/tv/${id}?api_key=${TMDB_API_KEY}&append_to_response=videos,iamges`
         ).then(res => res.json())
     },
 }
