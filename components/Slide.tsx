@@ -7,6 +7,8 @@ import { BlurView } from 'expo-blur';
 
 import styled from 'styled-components/native';
 import Poster from './Poster';
+import { Movie } from '../api';
+import { makeImgPath } from '../utils';
 
 
 const View = styled.View`flex: 1;`;
@@ -46,6 +48,7 @@ interface SlideProps {
     originalTitle: string; 
     voteAverage: number; 
     overview: string;
+    fullData: Movie;
     isDark: boolean;
 }
 
@@ -55,6 +58,7 @@ export default function Slide({
     originalTitle, 
     voteAverage, 
     overview, 
+    fullData,
     isDark
 }: SlideProps): JSX.Element {
     const navigation = useNavigation();
@@ -65,9 +69,7 @@ export default function Slide({
             'Stack', 
             { 
                 screen: 'Detail',
-                params: {
-                    originalTitle,
-                },
+                params: { ...fullData, },
             }
         );
     };
@@ -76,7 +78,7 @@ export default function Slide({
         <TouchableWithoutFeedback onPress={goToDetail}>
             <View style={{ flex: 1 }}>
                 <BgImg 
-                    source={{uri: `https://image.tmdb.org/t/p/w500${backdropPath}`}} 
+                    source={{uri: makeImgPath(backdropPath || '')}} 
                     style={StyleSheet.absoluteFill} 
                 />
                 <BlurView 
@@ -85,7 +87,7 @@ export default function Slide({
                     style={StyleSheet.absoluteFill}
                 >
                     <Wrapper>
-                        <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
+                        <Poster path={posterPath} />
 
                         <Column>
                             <Title isDark={isDark}>

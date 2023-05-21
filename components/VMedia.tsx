@@ -7,9 +7,10 @@ import { useNavigation } from '@react-navigation/native';
 
 import Poster from './Poster';
 import Votes from './Votes';
+import { Movie, TV } from '../api';
 
 
-const Movie = styled.View`
+const Container = styled.View`
     align-items: flex-start;
 `;
 
@@ -24,6 +25,7 @@ interface VMediaProps {
     posterPath: string;
     originalTitle: string;
     voteAverage: number;
+    fullData: Movie | TV;
     isDark: boolean;
 }
 
@@ -31,6 +33,7 @@ export default function VMedia({
     posterPath, 
     originalTitle, 
     voteAverage, 
+    fullData,
     isDark 
 }: VMediaProps): JSX.Element {
     const navigation = useNavigation();
@@ -41,17 +44,15 @@ export default function VMedia({
             'Stack', 
             { 
                 screen: 'Detail',
-                params: {
-                    originalTitle,
-                },
+                params: { ...fullData, },
             }
         );
     };
 
     return (
         <TouchableOpacity onPress={goToDetail}>
-            <Movie>
-                <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
+            <Container>
+                <Poster path={posterPath} />
 
                 <Title isDark={isDark}>
                     {
@@ -62,7 +63,7 @@ export default function VMedia({
                 </Title>
 
                 <Votes votes={voteAverage} />
-            </Movie>
+            </Container>
         </TouchableOpacity>
     )
 }

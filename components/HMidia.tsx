@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 
 import Poster from './Poster';
 import Votes from './Votes';
+import { Movie } from '../api';
+import { makeImgPath } from '../utils';
 
 
 
@@ -44,6 +46,7 @@ interface HMediaProps {
     overview: string;
     releaseDate?: string;
     voteAverage?: number;
+    fullData: Movie;
     isDark: boolean;
 }
 
@@ -53,6 +56,7 @@ export default function HMedia({
     overview, 
     releaseDate, 
     voteAverage,
+    fullData,
     isDark
 }: HMediaProps): JSX.Element {
     const navigation = useNavigation();
@@ -63,9 +67,7 @@ export default function HMedia({
             'Stack', 
             { 
                 screen: 'Detail',
-                params: {
-                    originalTitle,
-                },
+                params: { ...fullData,},
             }
         );
     };
@@ -73,7 +75,7 @@ export default function HMedia({
     return (
         <TouchableOpacity onPress={goToDetail}>
             <HMovie>
-                <Poster path={`https://image.tmdb.org/t/p/w500${posterPath}`} />
+                <Poster path={posterPath} />
 
                 <HColumn>
                     <Title isDark={isDark}>

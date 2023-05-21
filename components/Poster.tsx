@@ -2,6 +2,8 @@ import React from 'react';
 
 import styled from 'styled-components/native';
 
+import { makeImgPath } from '../utils';
+
 
 const Image = styled.Image`
     width: 100px;
@@ -16,6 +18,6 @@ interface PosterProps {
 
 export default function Poster({ path }: PosterProps): JSX.Element {
     return (
-        <Image source={{uri: path}} />
+        <Image source={{uri: makeImgPath(path)}} />
     );
 }

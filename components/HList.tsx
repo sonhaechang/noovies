@@ -49,6 +49,7 @@ export default function HList({ title, data, isDark }: HListProps): JSX.Element 
                             item.original_title ?? item.original_name
                         }
                         voteAverage={item.vote_average}
+                        fullData={item}
                         isDark={isDark}
                     />
                 )}
