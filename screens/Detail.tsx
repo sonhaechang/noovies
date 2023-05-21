@@ -1,6 +1,13 @@
 
 import React, { useEffect } from 'react';
-import { Dimensions, Linking, StyleSheet, useColorScheme } from 'react-native';
+import { 
+    Dimensions, 
+    Platform, 
+    Share, 
+    StyleSheet, 
+    TouchableOpacity, 
+    useColorScheme 
+} from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -91,15 +98,54 @@ export default function Detail({
 
         // react-native의 Linking 컴포넌트를 활용한 앱 외부에서 링크 열기
         // await Linking.openURL(baseUrl);
+    };
 
+    const shareMedia = async () => {
+        const isAndroid = Platform.OS === 'android';
+        const homepage = isMovie ? 
+        `https://www.imdb.com/title/${data.imdb_id}/` : 
+        data.homepage;
 
-    }
+        if (isAndroid) {
+            await Share.share({
+                message: `${params.overview}\nCheck it out: ${homepage}`,
+                title: 'original_title' in params ?
+                params.original_title : 
+                params.original_name,
+            });
+        } else {
+            await Share.share({
+                url: homepage,
+                title: 'original_title' in params ?
+                params.original_title : 
+                params.original_name,
+            });
+        }
+    };
+
+    const ShareButton = () => (
+        <TouchableOpacity onPress={shareMedia}>
+            <Ionicons 
+                name='share-outline' 
+                color={isDark ? 'white' : colors.dark}
+                size={24}
+            />
+        </TouchableOpacity>
+    );
 
     useEffect(() => {
         setOptions({
             title: 'original_title' in params ? 'Movie' : 'TV Show',
         })
     }, []);
+
+    useEffect(() => {
+        if (data) {
+            setOptions({
+                headerRight: () => <ShareButton />,
+            })
+        }
+    }, [data]);
 
     return (
         <Container isDark={isDark}>
