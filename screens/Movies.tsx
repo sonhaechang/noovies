@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, FlatList, useColorScheme } from 'react-native';
+import { Alert, Dimensions, FlatList, useColorScheme } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -7,7 +7,7 @@ import Swiper from 'react-native-swiper';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Slide from '../components/Slide';
 import HMedia from '../components/HMidia';
@@ -49,7 +49,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     const { 
         isInitialLoading: upcomingLoading, 
         data: upcomingData
-    } = useQuery<MovieResponse>(['movies', 'upcoming'], moviesApi.getUpcoming);
+    } = useInfiniteQuery<MovieResponse>(['movies', 'upcoming'], moviesApi.getUpcoming);
     
     const { 
         isInitialLoading: trendingLoading, 
@@ -63,6 +63,12 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         await queryClient.refetchQueries(['movies']);
         setRefreshing(false);
     };
+
+    const loadMore = () => {
+        Alert.alert('load more!');
+    };
+
+    console.log(upcomingData);
 
     const renderHMedia = ({ item }: {item: Movie}) => (
         <HMedia
@@ -79,6 +85,8 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         <Loader />
     ) : upcomingData ? (
         <FlatList 
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.4}
             onRefresh={onRefresh}
             refreshing={refreshing}
             showsVerticalScrollIndicator={false}
@@ -122,7 +130,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
                 </>
             }
             ItemSeparatorComponent={HSeperator}
-            data={upcomingData.results}
+            data={upcomingData.pages.map(page => page.results).flat()}
             keyExtractor={(item) => String(item.id)}
             renderItem={renderHMedia}
         />
