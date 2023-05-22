@@ -77,8 +77,6 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
         if (hasNextPage) { fetchNextPage(); }
     };
 
-    console.log(upcomingData);
-
     const renderHMedia = ({ item }: {item: Movie}) => (
         <HMedia
             posterPath={item.poster_path || ''}
