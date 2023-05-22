@@ -3,7 +3,7 @@ import { RefreshControl, ScrollView, useColorScheme } from 'react-native';
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { tvApi } from '../api';
+import { tvApi, TVResponse } from '../api';
 import Loader from '../components/Loader';
 import HList from '../components/HList';
 
@@ -51,23 +51,35 @@ export default function Tv(): JSX.Element {
                 />
             }
         >
-            <HList 
-                title='Trendig TV' 
-                data={trendingData.results}
-                isDark={isDark}
-            />
+            {
+                trendingData ? (
+                    <HList 
+                        title='Trendig TV' 
+                        data={trendingData.results}
+                        isDark={isDark}
+                    />
+                ) : <></>
+            }
 
-            <HList 
-                title='Airing Today' 
-                data={todayData.results}
-                isDark={isDark}
-            />
+            {
+                todayData ? (
+                    <HList 
+                        title='Airing Today' 
+                        data={todayData.results}
+                        isDark={isDark}
+                    />
+                ) : <></>
+            }
 
-            <HList 
-                title='Top Rated TV' 
-                data={topData.results}
-                isDark={isDark}
-            />
+            {
+                topData ? (
+                    <HList 
+                        title='Top Rated TV' 
+                        data={topData.results}
+                        isDark={isDark}
+                    />
+                ) : <></>
+            }
         </ScrollView>
     );
 }

@@ -49,7 +49,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     const { 
         isInitialLoading: upcomingLoading, 
         data: upcomingData
-    } = useQuery<MovieResponse>(['movies', 'upcoming'], moviesApi.getUpcommig);
+    } = useQuery<MovieResponse>(['movies', 'upcoming'], moviesApi.getUpcoming);
     
     const { 
         isInitialLoading: trendingLoading, 

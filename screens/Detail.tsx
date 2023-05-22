@@ -19,7 +19,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 
-import { Movie, TV, moviesApi, tvApi } from '../api';
+import { Movie, MovieDetails, moviesApi, TV, tvApi, TVDetails } from '../api';
 import { makeImgPath } from '../utils';
 import { colors } from '../colors';
 import Poster from '../components/Poster';
@@ -87,7 +87,7 @@ export default function Detail({
     const isDark = useColorScheme() === 'dark';
     const isMovie = 'original_title' in params;
 
-    const { isInitialLoading, data } = useQuery(
+    const { isInitialLoading, data } = useQuery<MovieDetails | TVDetails>(
         [isMovie ? 'movies' : 'tv', params.id], 
         isMovie ? moviesApi.getDetail : tvApi.getDetail,
     );
@@ -101,25 +101,29 @@ export default function Detail({
     };
 
     const shareMedia = async () => {
-        const isAndroid = Platform.OS === 'android';
-        const homepage = isMovie ? 
-        `https://www.imdb.com/title/${data.imdb_id}/` : 
-        data.homepage;
-
-        if (isAndroid) {
-            await Share.share({
+        if (data) {
+            const isAndroid = Platform.OS === "android";
+            const homepage =
+                isMovie && "imdb_id" in data
+                ? `https://www.imdb.com/title/${data.imdb_id}/`
+                : data.homepage;
+            if (isAndroid) {
+                await Share.share({
                 message: `${params.overview}\nCheck it out: ${homepage}`,
-                title: 'original_title' in params ?
-                params.original_title : 
-                params.original_name,
-            });
-        } else {
-            await Share.share({
+                title:
+                    "original_title" in params
+                    ? params.original_title
+                    : params.original_name,
+                });
+            } else {
+                await Share.share({
                 url: homepage,
-                title: 'original_title' in params ?
-                params.original_title : 
-                params.original_name,
-            });
+                title:
+                    "original_title" in params
+                    ? params.original_title
+                    : params.original_name,
+                });
+            }
         }
     };
 

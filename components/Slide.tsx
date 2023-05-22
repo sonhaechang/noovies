@@ -64,8 +64,8 @@ export default function Slide({
     const navigation = useNavigation();
 
     const goToDetail = () => {
-        //@ts-ignore
         navigation.navigate(
+            //@ts-ignore
             'Stack', 
             { 
                 screen: 'Detail',

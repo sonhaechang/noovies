@@ -32,7 +32,9 @@ const HColumn = styled.View`
 const Release = styled.Text<{ isDark: boolean }>`
     color: ${(props) => (props.isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.8)')};
     font-size: 12px;
-    margin-vertical: 10px;
+    margin: 10px 0px;
+    font-weight: 500;
+    opacity: 0.6;
 `;
 
 const Overview = styled.Text<{ isDark: boolean }>`
@@ -62,8 +64,8 @@ export default function HMedia({
     const navigation = useNavigation();
 
     const goToDetail = () => {
-        //@ts-ignore
         navigation.navigate(
+            //@ts-ignore
             'Stack', 
             { 
                 screen: 'Detail',

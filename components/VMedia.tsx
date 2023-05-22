@@ -39,8 +39,8 @@ export default function VMedia({
     const navigation = useNavigation();
 
     const goToDetail = () => {
-        //@ts-ignore
         navigation.navigate(
+            //@ts-ignore
             'Stack', 
             { 
                 screen: 'Detail',

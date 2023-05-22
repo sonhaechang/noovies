@@ -5,6 +5,8 @@ import styled from 'styled-components/native';
 
 import VMedia from '../components/VMedia';
 
+import { Movie, TV } from '../api';
+
 
 const ListContainer = styled.View`
     margin-bottom: 40px;
@@ -24,7 +26,7 @@ export const VSeperator = styled.View`
 
 interface HListProps  {
     title: string;
-    data: any[];
+    data: Movie[] | TV[];
     isDark: boolean;
 }
 
@@ -41,13 +43,13 @@ export default function HList({ title, data, isDark }: HListProps): JSX.Element 
                 contentContainerStyle={{ paddingHorizontal: 20 }}
                 ItemSeparatorComponent={VSeperator}
                 data={data}
-                keyExtractor={(item) => String(item.id)}
-                renderItem={({ item }) => (
+                keyExtractor={(item: Movie | TV) => String(item.id)}
+                renderItem={({ item }: { item: Movie | TV }) => (
                     <VMedia 
-                        posterPath={item.poster_path}
+                        posterPath={item.poster_path || ''}
                         originalTitle={
-                            item.original_title ?? item.original_name
-                        }
+                            "original_title" in item ? item.original_title : item.original_name
+                          }
                         voteAverage={item.vote_average}
                         fullData={item}
                         isDark={isDark}
