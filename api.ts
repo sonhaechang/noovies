@@ -157,9 +157,9 @@ export const moviesApi: MovieFetchers = {
             `${BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}`
         ).then(res => res.json()),
 
-    getUpcoming: () =>
+    getUpcoming: ({ pageParam }) =>
         fetch(
-            `${BASE_URL}/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&page=1&region=KR`
+            `${BASE_URL}/movie/upcoming?api_key=${TMDB_API_KEY}&language=en-US&page=${pageParam}&region=KR`
         ).then(res => res.json()),
 
     getNowPlaying: () => 

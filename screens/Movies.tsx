@@ -48,8 +48,17 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
 
     const { 
         isInitialLoading: upcomingLoading, 
-        data: upcomingData
-    } = useInfiniteQuery<MovieResponse>(['movies', 'upcoming'], moviesApi.getUpcoming);
+        data: upcomingData,
+        hasNextPage,
+        fetchNextPage
+    } = useInfiniteQuery<MovieResponse>({
+        queryKey: ['movies', 'upcoming'], 
+        queryFn: moviesApi.getUpcoming,
+        getNextPageParam: (currentPage) => {
+            const  nextPage = currentPage.page + 1;
+            return nextPage > currentPage.total_pages ? null : nextPage;
+        },
+    });
     
     const { 
         isInitialLoading: trendingLoading, 
@@ -65,7 +74,7 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     };
 
     const loadMore = () => {
-        Alert.alert('load more!');
+        if (hasNextPage) { fetchNextPage(); }
     };
 
     console.log(upcomingData);
@@ -86,7 +95,6 @@ export default function Movies({ navigation: { navigate }}: MoviesScreenProps): 
     ) : upcomingData ? (
         <FlatList 
             onEndReached={loadMore}
-            onEndReachedThreshold={0.4}
             onRefresh={onRefresh}
             refreshing={refreshing}
             showsVerticalScrollIndicator={false}
